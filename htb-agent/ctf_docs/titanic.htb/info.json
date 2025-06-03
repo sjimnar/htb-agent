@@ -1,0 +1,59 @@
+{
+  "target_ip": "10.10.11.55",
+  "hostname": "titanic.htb",
+  "os": "Linux",
+  "initial_scan_results": [
+    {
+      "port": "22/tcp",
+      "state": "open",
+      "service": "ssh",
+      "version": "OpenSSH 8.9p1 Ubuntu 3ubuntu0.10 (Ubuntu Linux; protocol 2.0)"
+    },
+    {
+      "port": "80/tcp",
+      "state": "open",
+      "service": "http",
+      "version": "Apache httpd 2.4.52"
+    }
+  ],
+  "web_enumeration": {
+    "directories": [
+      "/book (Status: 405) [Size: 153]",
+      "/download (Status: 400) [Size: 41]", 
+      "/server-status (Status: 403) [Size: 276]"
+    ],
+    "technologies": [
+      "Werkzeug/3.0.3",
+      "Python/3.10.12",
+      "Apache/2.4.52"
+    ],
+    "features": [
+      "Booking form",
+      "Download tickets"
+    ]
+  },
+  "findings": [
+    {
+      "type": "Workflow",
+      "description": "The application allows users to book ship trips by submitting personal information",
+      "details": "Form submission to /book endpoint creates a ticket and redirects to /download?ticket=UUID.json"
+    },
+    {
+      "type": "Potential vulnerability",
+      "description": "The download endpoint might be vulnerable to path traversal",
+      "details": "The download endpoint accepts a ticket parameter that points to a JSON file"
+    }
+  ],
+  "known_vulnerabilities": [
+    {
+      "type": "Local File Inclusion (LFI)",
+      "location": "/download endpoint",
+      "description": "The download endpoint is vulnerable to path traversal/LFI",
+      "details": "By manipulating the 'ticket' parameter (e.g., ?ticket=../../../etc/passwd), an attacker can read arbitrary files from the server's filesystem",
+      "exploitation": "Confirmed working by accessing /etc/passwd",
+      "discovered_users": ["root", "developer", "www-data"]
+    }
+  ],
+  "credentials": {},
+  "notes": "The website uses a Python backend (Werkzeug) behind Apache. The booking system creates JSON files containing user input and allows their download through a ticket ID system."
+}

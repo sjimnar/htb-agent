@@ -1,0 +1,9 @@
+{
+  "target_ip": "0.0.0.0",
+  "hostname": "machine_name.htb",
+  "os": "Linux/Windows",
+  "initial_scan_results": [],
+  "known_vulnerabilities": [],
+  "credentials": {},
+  "notes": "Notas iniciales sobre la máquina"
+}
